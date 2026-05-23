@@ -24,9 +24,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Live demo
 
-After pushing to GitHub, the app is published at:
+The app is published automatically from the `main` branch at:
 
 **https://pdilillo.github.io/spinner-app/**
+
+Pushing to `main` triggers a GitHub Actions workflow that builds and deploys the site. You do not need to run a separate deploy command for routine updates.
 
 ## Usage
 
@@ -94,6 +96,35 @@ npm run preview
 ```
 
 The `dist/` folder is a static site you can deploy to [Vercel](https://vercel.com), [Netlify](https://netlify.com), or GitHub Pages.
+
+## Deploy to GitHub Pages
+
+This repo includes a workflow at `.github/workflows/deploy.yml` that builds and publishes the site to GitHub Pages.
+
+### Updating the live site (automatic)
+
+For day-to-day changes, deployment is automatic:
+
+1. Commit your changes locally
+2. Push to the `main` branch
+3. GitHub Actions runs **Deploy to GitHub Pages** (build → upload artifact → deploy)
+4. The live site updates after the workflow finishes (usually 1–2 minutes)
+
+You can watch progress under the repo’s **Actions** tab. When the run is green, the update is live.
+
+To deploy without new commits, open **Actions → Deploy to GitHub Pages → Run workflow** (this uses the `workflow_dispatch` trigger).
+
+### One-time setup (new repo or fork)
+
+If you fork this project or create a new GitHub repo, do this once:
+
+1. Push the code to GitHub
+2. In the repo, go to **Settings → Pages**
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**
+4. Update `base` in `vite.config.ts` to match your repo name (for example, `/my-repo-name/`). GitHub Pages serves user/organization sites at `https://<username>.github.io/<repo-name>/`
+5. Push to `main` to trigger the first deploy
+
+After that, every push to `main` redeploys automatically.
 
 ## Deploy to Vercel
 
