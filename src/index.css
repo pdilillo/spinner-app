@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@layer base {
+  body {
+    @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
+  }
+}
+
+@layer utilities {
+  .spin-wheel-transition {
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  }
+
+  .spin-wheel-transition-reduced {
+    transition: transform 0.5s ease-out;
+  }
+}
