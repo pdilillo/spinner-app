@@ -5,7 +5,8 @@ import {
   getLabelPosition,
   getSegmentAngle,
   getSegmentColor,
-  truncateLabel,
+  abbreviateLabel,
+  getLabelMaxLength,
 } from '../utils/wheelGeometry'
 
 interface SpinWheelProps {
@@ -105,7 +106,7 @@ export function SpinWheel({
                   transform={`rotate(${label.rotation}, ${label.x}, ${label.y})`}
                   style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
                 >
-                  {truncateLabel(item.label, items.length > 12 ? 10 : 14)}
+                  {abbreviateLabel(item.label, getLabelMaxLength(items.length))}
                 </text>
               </g>
             )

@@ -66,9 +66,46 @@ export function getLabelPosition(
   }
 }
 
-export function truncateLabel(label: string, maxLength = 14): string {
-  if (label.length <= maxLength) return label
-  return `${label.slice(0, maxLength - 1)}…`
+export function getLabelMaxLength(itemCount: number): number {
+  if (itemCount > 16) return 4
+  if (itemCount > 12) return 6
+  if (itemCount > 8) return 10
+  if (itemCount > 6) return 12
+  return 16
+}
+
+function abbreviateWord(word: string, maxLen: number): string {
+  if (word.length <= maxLen) return word
+  if (maxLen <= 1) return word[0] ?? ''
+  return `${word.slice(0, maxLen - 1)}.`
+}
+
+export function abbreviateLabel(label: string, maxLength = 14): string {
+  const trimmed = label.trim()
+  if (!trimmed || trimmed.length <= maxLength) return trimmed
+
+  const words = trimmed.split(/\s+/).filter(Boolean)
+
+  if (words.length === 1) {
+    if (maxLength <= 2) return trimmed.slice(0, maxLength)
+    return abbreviateWord(trimmed, maxLength)
+  }
+
+  const initials = words.map((w) => w[0]?.toUpperCase() ?? '').join('')
+  if (initials.length <= maxLength) return initials
+
+  const perWordMax = Math.max(
+    2,
+    Math.floor((maxLength - (words.length - 1)) / words.length),
+  )
+  const shortenedWords = words.map((w) => abbreviateWord(w, perWordMax)).join(' ')
+  if (shortenedWords.length <= maxLength) return shortenedWords
+
+  const dotted = words.map((w) => `${w[0]?.toUpperCase() ?? ''}.`).join(' ')
+  if (dotted.length <= maxLength) return dotted
+
+  if (initials.length > maxLength) return initials.slice(0, maxLength)
+  return abbreviateWord(trimmed.replace(/\s+/g, ''), maxLength)
 }
 
 export function computeTargetRotation(
