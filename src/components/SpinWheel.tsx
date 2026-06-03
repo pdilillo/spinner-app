@@ -71,7 +71,7 @@ export function SpinWheel({
 
       <div
         ref={wheelRef}
-        className={`aspect-square w-full ${spinning || rotation > 0 ? transitionClass : ''}`}
+        className={`aspect-square w-full ${spinning ? transitionClass : ''}`}
         style={{ transform: `rotate(${rotation}deg)` }}
       >
         <svg
@@ -81,9 +81,9 @@ export function SpinWheel({
           aria-label={`Spinning wheel with ${items.length} options`}
         >
           {items.map((item, index) => {
-            const startAngle = index * segmentAngle
-            const endAngle = (index + 1) * segmentAngle
-            const midAngle = startAngle + segmentAngle / 2
+            const midAngle = index * segmentAngle
+            const startAngle = midAngle - segmentAngle / 2
+            const endAngle = midAngle + segmentAngle / 2
             const path = describeSegmentPath(CX, CY, RADIUS, startAngle, endAngle)
             const label = getLabelPosition(CX, CY, RADIUS, midAngle)
 

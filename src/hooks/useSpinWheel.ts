@@ -1,6 +1,9 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { SpinnerItem } from '../types'
-import { computeTargetRotation } from '../utils/wheelGeometry'
+import {
+  computeTargetRotation,
+  getIdleRotation,
+} from '../utils/wheelGeometry'
 
 export type SpinPhase = 'idle' | 'spinning' | 'result'
 
@@ -13,11 +16,37 @@ interface UseSpinWheelResult {
   reset: () => void
 }
 
+function getItemsKey(items: SpinnerItem[]): string {
+  return items.map((i) => i.id).join('|')
+}
+
 export function useSpinWheel(items: SpinnerItem[]): UseSpinWheelResult {
-  const [rotation, setRotation] = useState(0)
+  const [rotation, setRotation] = useState(() => getIdleRotation(items.length))
   const [phase, setPhase] = useState<SpinPhase>('idle')
   const [winner, setWinner] = useState<SpinnerItem | null>(null)
-  const rotationRef = useRef(0)
+  const rotationRef = useRef(getIdleRotation(items.length))
+  const prevItemsKeyRef = useRef<string | null>(null)
+
+  const alignWheelIdle = useCallback((itemCount: number) => {
+    const idle = getIdleRotation(itemCount)
+    rotationRef.current = idle
+    setRotation(idle)
+  }, [])
+
+  useEffect(() => {
+    const itemsKey = getItemsKey(items)
+
+    if (phase !== 'idle') {
+      return
+    }
+
+    if (prevItemsKeyRef.current === itemsKey) {
+      return
+    }
+
+    prevItemsKeyRef.current = itemsKey
+    alignWheelIdle(items.length)
+  }, [items, phase, alignWheelIdle])
 
   const spin = useCallback(() => {
     if (items.length < 2 || phase !== 'idle') return

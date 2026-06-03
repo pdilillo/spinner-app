@@ -19,6 +19,25 @@ export function getSegmentAngle(count: number): number {
   return 360 / count
 }
 
+/** Center angle of a segment (0° = top / pointer). */
+export function getSegmentCenterAngle(index: number, itemCount: number): number {
+  return index * getSegmentAngle(itemCount)
+}
+
+/** Rotation (mod 360) that places a segment center under the pointer. */
+export function getRotationForSegmentCenter(
+  index: number,
+  itemCount: number,
+): number {
+  const center = getSegmentCenterAngle(index, itemCount)
+  return (360 - center) % 360
+}
+
+/** Idle wheel pose: first segment centered at the pointer. */
+export function getIdleRotation(_itemCount: number): number {
+  return 0
+}
+
 function polarToCartesian(
   cx: number,
   cy: number,
@@ -114,8 +133,7 @@ export function computeTargetRotation(
   currentRotation: number,
   fullSpins = 5,
 ): number {
-  const segmentAngle = getSegmentAngle(itemCount)
-  const winnerCenter = winnerIndex * segmentAngle + segmentAngle / 2
+  const winnerCenter = getSegmentCenterAngle(winnerIndex, itemCount)
   const minRotation = currentRotation + fullSpins * 360
   const baseTarget = minRotation + (360 - winnerCenter)
   const currentMod = currentRotation % 360
